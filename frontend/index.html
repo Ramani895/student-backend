@@ -3,123 +3,447 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎓 Student Management System</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Student Management System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap"/>
   <style>
+    :root {
+      --background-light: #f7f9fb;
+      --background-dark: #202227;
+      --primary: #2356A8;
+      --primary-dark: #183260;
+      --accent: #0D99FF;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #23252e;
+      --table-header: #2356A8;
+      --table-header-dark: #242942;
+      --success: #3db77c;
+      --danger: #d34040;
+      --warning: #e6b450;
+      --info: #208dcc;
+      --input-bg: #f3f6fa;
+      --input-bg-dark: #232732;
+      --notif-shadow: 0 8px 32px #cfd8e333;
+    }
+    html, body {
+      min-height: 100%;
+      padding: 0; margin: 0;
+    }
     body {
-      transition: background-color 0.4s, color 0.4s;
+      font-family: 'Nunito', Arial, sans-serif;
+      background: var(--background-light);
+      color: #21304c;
+      min-height: 100vh;
+      transition: background 0.4s, color 0.4s;
+      letter-spacing: 0.012em;
+    }
+    body.dark-mode {
+      background: var(--background-dark) !important;
+      color: #ebeff7;
+    }
+    .bg-gradient-main {
+      background: var(--background-light);
+    }
+    body.dark-mode .bg-gradient-main {
+      background: var(--background-dark);
+    }
+    .main-title {
+      font-size: 2.08rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 0.012em;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid #e3e7ee;
+      padding-bottom: .7rem;
+    }
+    body.dark-mode .main-title {
+      color: #e6eaf4;
+      border-bottom: 2px solid #233461;
+    }
+    .card {
+      background: var(--card-bg-light);
+      border: 1px solid #e9eef3;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px #cfd8e380;
+      transition: background .23s, color .23s, box-shadow .15s;
+    }
+    body.dark-mode .card {
+      background: var(--card-bg-dark);
+      color: #e3e8f2;
+      border: 1px solid #232942;
+      box-shadow: 0 5px 28px #10131d41;
+    }
+    #formTitle {
+      color: var(--primary);
+      font-weight: 600;
+      text-shadow: none;
+    }
+    body.dark-mode #formTitle { color: #65aaff; }
+    label.form-label {
+      font-weight: 600;
+      color: #20406f;
+      opacity: .92;
+    }
+    body.dark-mode label.form-label {
+      color: #97c6ff;
+      opacity: .94;
+    }
+    .form-control {
+      border-radius: 9px;
+      background: var(--input-bg);
+      border: 1px solid #c3d4e7;
+      color: #30435c;
+      font-size: 1.01rem;
+      box-shadow: none;
+      transition: background 0.18s, color 0.18s, border-color 0.14s;
+    }
+    .form-control:focus {
+      background: #eaf2fa;
+      border-color: var(--primary);
+      box-shadow: 0 1.5px 8px #2356a820;
+      color: #1e3754;
+    }
+    body.dark-mode .form-control {
+      background: var(--input-bg-dark);
+      border: 1.2px solid #3753a7;
+      color: #e4ecfc;
+    }
+    body.dark-mode .form-control:focus {
+      background: #1d232b;
+      color: #e4ecfc;
+      border-color: #5292e3;
+    }
+    .btn-animated {
+      transition: background 0.16s, box-shadow 0.19s, color 0.12s, transform 0.10s;
+      box-shadow: 0 2px 6px #3a5ea911;
+      font-weight: 600;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+    .btn-animated:active,
+    .btn-animated:focus,
+    .btn-animated:hover {
+      transform: scale(1.038) skew(-.7deg, -0.7deg);
+      box-shadow: 0 3px 11px #354e7320;
+    }
+    #submitBtn.glow {
+      box-shadow: 0 0 1px 3px #61aefd23, 0 1px 11px #2356a820 !important;
+      background: linear-gradient(89deg, #2356A8 60%,#5292e3 120%);
+      color: #fff !important;
+    }
+    .floating-border {
+      height: 4px;
+      width: 98%;
+      margin: 1.8rem auto 0;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #f2f7fd 0%, #dbe6f5 100%);
+      box-shadow: 0 1.2px 10px #b3c5db13;
+      opacity: .8;
     }
 
-    .dark-mode {
-      background-color: #121212;
-      color: #e0e0e0;
+    .students-table-responsive {
+      overflow-x: auto;
+      border-radius: 10px;
+      margin-bottom: 1.2rem;
+      background: transparent;
+      box-shadow: none;
     }
-
-    .dark-mode .card {
-      background-color: #1e1e1e;
-      color: #fff;
-      border: 1px solid #333;
+    .table {
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f4f7fa;
+      margin-top: 0.18rem;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-size: 1.01rem;
     }
-
+    .table th {
+      background: var(--table-header);
+      color: #f5f7fa;
+      font-weight: 700;
+      border-bottom: 2px solid #d7e1ee;
+      font-size: 1.05rem;
+      letter-spacing: .027em;
+      border-top: 0 !important;
+    }
+    body.dark-mode .table th {
+      background: var(--table-header-dark);
+      color: #acb8d8;
+      border-bottom: 2px solid #354373;
+    }
+    .table-striped>tbody>tr:nth-of-type(odd)>* {
+      background-color: #f8fbfd;
+    }
+    body.dark-mode .table-striped>tbody>tr:nth-of-type(odd)>* {
+      background: #232732;
+      color: #d6defa;
+    }
+    .table-hover tbody tr {
+      transition: background 0.12s, transform 0.10s;
+    }
     .table-hover tbody tr:hover {
-      transform: scale(1.01);
-      transition: 0.2s ease;
-      background-color: rgba(0, 123, 255, 0.1);
+      transform: scale(1.01) skew(-.1deg, 0deg);
+      background: #eaf0f8;
+      cursor:pointer;
+      box-shadow: 0 1px 8px #5c7fa410;
     }
-
+    body.dark-mode .table-hover tbody tr:hover {
+      background: #263157;
+    }
+    .table .btn {
+      border-radius: 22px;
+      padding: 0.25em 1.05em;
+      font-size: 1.01rem;
+      margin: 0 1px;
+      font-weight:600;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+    .table .btn.edit-btn {
+      background: #f5f8fb;
+      color: var(--primary);
+      border: 1px solid #b5cbe7;
+    }
+    .table .btn.delete-btn {
+      background: #fff7f7;
+      color: #d34040;
+      border: 1px solid #f1cccc;
+    }
+    .table .btn.edit-btn:hover {
+      background: #ebf2fa;
+      color: #2356A8;
+      border: 1px solid #2356A8;
+    }
+    .table .btn.delete-btn:hover {
+      background: #fae6e6;
+      color: #a01d1d;
+      border: 1px solid #a01d1d;
+      box-shadow: 0 1px 7px #d3404022;
+    }
+    body.dark-mode .table .btn.edit-btn {
+      background: #26335b;
+      color: #89b3ff;
+      border: 1px solid #364595;
+    }
+    body.dark-mode .table .btn.delete-btn {
+      background: #302b36;
+      color: #e45b5b;
+      border: 1px solid #7d4e4e;
+    }
+    .badge-year {
+      background: #e8f0fa;
+      color: #2356A8;
+      border-radius: 7px;
+      font-size: .97rem;
+      padding: 0.18em 0.8em;
+      font-weight: 600;
+      margin-left: 3px;
+      letter-spacing: .018em;
+      box-shadow: 0 1px 6px #8bb4de20;
+      border: 1px solid #bdd5ef;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+    body.dark-mode .badge-year {
+      background: #253364;
+      color: #b2cdf1;
+      border: 1px solid #364595;
+    }
+    .symbol-in-table {
+      display: none;
+    }
+    /* Highlight row effect */
+    .highlight-row {
+      animation: highlightRow 0.62s cubic-bezier(.23,1.05,.22,1);
+    }
+    @keyframes highlightRow {
+      0%   { background: #aedaff;}
+      75%  { background: #eaf0fb;}
+      100% { background: inherit;}
+    }
+    /* Notifications (toasts) styling */
     .toast-container {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
+      top: 28px;
+      right: 27px;
+      z-index: 1209;
+      min-width: 275px;
+      pointer-events: none;
+    }
+    .custom-toast {
+      pointer-events: auto;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: var(--notif-shadow);
+      opacity: 0.98;
+      animation: toastIn .44s cubic-bezier(.6,.09,.44,1.21);
+      font-size: 1.06rem;
+      background: #f7faff;
+      border: 1.5px solid #bdd5ef;
+      color: #1e3754;
+      padding: .6em 1em;
+      margin-bottom: 0.48em;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-28px) scale(.97);}
+      50%  { opacity: .91; }
+      to   { opacity: 1; transform: none;}
+    }
+    body.dark-mode .custom-toast {
+      background: #222d43;
+      color: #eaf4fe;
+      border: 1.5px solid #364595;
     }
 
+    /* Minimal modern dark mode toggle */
     .toggle-dark-btn {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
-      z-index: 1000;
+      top: 24px;
+      right: 35px;
+      z-index: 1303;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 22px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      width: 47px;
+      height: 47px;
+      font-size: 26px;
+      background: #e8f0fa;
+      color: #2356A8;
+      box-shadow: 0 4px 18px #cfd8e333;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: 2px solid #bdd5efb8;
+      transition: background 0.19s, color 0.19s, box-shadow 0.15s, transform 0.08s;
+      cursor: pointer;
+      filter: brightness(1.01);
+    }
+    .toggle-dark-btn:hover, .toggle-dark-btn:focus {
+      background: #2356a8;
+      color: #fff;
+      box-shadow: 0 1px 18px #2356a833;
+      outline: 2.5px solid #0d99ff44;
+      transform: scale(1.04) rotate(-2deg);
+    }
+    body.dark-mode .toggle-dark-btn {
+      background: #243055;
+      color: #a3d0fd;
+      box-shadow: 0 4px 14px #35437366;
+      outline: 2px solid #354373a8;
+    }
+    .dark-icon {
+      transition: transform 0.22s cubic-bezier(.58,0,.42,1), color 0.18s;
+      font-size: 27px;
+      margin-left: 0;
     }
 
-    .btn-animated {
-      transition: transform 0.2s ease;
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+      .main-title { font-size: 1.22rem;}
+      .toggle-dark-btn { width: 36px; height: 36px; font-size: 16px;}
+      .card { border-radius: 7px;}
+      .students-table-responsive { border-radius: 5px;}
+      .floating-border { border-radius: 4px;}
+      .custom-toast { min-width: 90vw;}
+      .bg-gradient-main { padding: 0.8em .2em !important;}
     }
-
-    .btn-animated:hover {
-      transform: scale(1.05);
+    select.form-control {
+      cursor: pointer;
+      background: #e7f1fa;
+    }
+    body.dark-mode select.form-control {
+      background: #232732;
+      color: #b5cbe7;
     }
   </style>
 </head>
+<body>
+  <div class="container py-4 bg-gradient-main">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-xl-9">
 
-<body class="bg-light">
-  <div class="container py-5">
-    <h2 class="text-center mb-4">🎓 Student Management System</h2>
+        <h1 class="main-title animated-appear">
+          Student Management System
+        </h1>
 
-    <!-- Add / Edit Student Form -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-body">
-        <h5 id="formTitle">Add New Student</h5>
-        <form id="studentForm">
-          <input type="hidden" id="studentId" />
+        <div class="card mb-4 shadow-sm animated-appear">
+          <div class="card-body pb-3">
+            <h5 id="formTitle" class="mb-2 fw-semibold">Add New Student</h5>
+            <form id="studentForm" autocomplete="off">
+              <input type="hidden" id="studentId" />
 
-          <div class="row g-3">
-            <div class="col-md-4">
-              <input type="text" id="name" class="form-control" placeholder="Name" required />
-            </div>
-            <div class="col-md-2">
-              <input type="text" id="rollNumber" class="form-control" placeholder="Roll No" required />
-            </div>
-            <div class="col-md-3">
-              <input type="email" id="email" class="form-control" placeholder="Email" required />
-            </div>
-            <div class="col-md-2">
-              <input type="text" id="department" class="form-control" placeholder="Department" required />
-            </div>
-            <div class="col-md-1">
-              <input type="number" id="year" class="form-control" placeholder="Year" required />
+              <div class="row g-2 align-items-end">
+                <div class="col-md-4 col-12">
+                  <label class="form-label" for="name">Full Name</label>
+                  <input type="text" id="name" class="form-control" placeholder="e.g. Alexis Tiger" required />
+                </div>
+                <div class="col-md-2 col-6">
+                  <label class="form-label" for="rollNumber">Roll No</label>
+                  <input type="text" id="rollNumber" class="form-control" placeholder="123" required />
+                </div>
+                <div class="col-md-3 col-6">
+                  <label class="form-label" for="email">Email</label>
+                  <input type="email" id="email" class="form-control" placeholder="tiger@email.com" required />
+                </div>
+                <div class="col-md-2 col-6">
+                  <label class="form-label" for="department">Department</label>
+                  <input type="text" id="department" class="form-control" placeholder="e.g. ART" required />
+                </div>
+                <div class="col-md-1 col-6">
+                  <label class="form-label" for="year">Year</label>
+                  <input type="number" id="year" class="form-control" min="1" max="8" placeholder="1" required />
+                </div>
+              </div>
+
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-animated px-4 btn-primary" id="submitBtn">
+                  <span id="submitBtnIcon" class="me-1">+</span>
+                  <span id="submitBtnText">Add Student</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-animated px-3 d-none" id="cancelEditBtn">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <div class="floating-border"></div>
+        </div>
+
+        <div class="card shadow-sm animated-appear">
+          <div class="card-body">
+            <h5 class="mb-3" style="color:#2356A8; text-shadow:none;">All Students</h5>
+            <div class="students-table-responsive">
+              <table class="table table-striped table-hover align-middle mb-0" id="studentTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Roll #</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Year</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Table rows load here -->
+                </tbody>
+              </table>
             </div>
           </div>
-
-          <button type="submit" class="btn btn-primary mt-3 btn-animated" id="submitBtn">Add Student</button>
-          <button type="button" class="btn btn-secondary mt-3 d-none btn-animated" id="cancelEditBtn">Cancel</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Students Table -->
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5>All Students</h5>
-        <table class="table table-striped table-hover align-middle" id="studentTable">
-          <thead class="table-primary">
-            <tr>
-              <th>Name</th>
-              <th>Roll Number</th>
-              <th>Email</th>
-              <th>Department</th>
-              <th>Year</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        </div>
+        <!-- END Body Containers -->
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Notifications Toast Container -->
   <div class="toast-container"></div>
 
-  <!-- Dark Mode Toggle -->
-  <button class="btn btn-dark toggle-dark-btn" id="toggleDark">🌙</button>
+  <!-- Minimal Dark Mode Toggle -->
+  <button class="toggle-dark-btn" id="toggleDark" aria-label="Toggle dark mode">
+    <span class="dark-icon" id="darkModeIcon">🌙</span>
+  </button>
 
   <script>
-    const API_URL = "http://localhost:5000/api/students";
+    const API_URL = "https://student-backend-mn2o.onrender.com/api/students";
+
     const form = document.getElementById("studentForm");
     const tableBody = document.querySelector("#studentTable tbody");
     const formTitle = document.getElementById("formTitle");
@@ -127,100 +451,243 @@
     const cancelEditBtn = document.getElementById("cancelEditBtn");
     const toastContainer = document.querySelector(".toast-container");
     const toggleDarkBtn = document.getElementById("toggleDark");
+    const submitBtnText = document.getElementById("submitBtnText");
+    const submitBtnIcon = document.getElementById("submitBtnIcon");
+    const darkModeIcon = document.getElementById("darkModeIcon");
 
-    // Toast Notification
-    function showToast(message, type = "success") {
+    // --- Dark mode helpers ---
+    function getSystemPrefDark() {
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    function getDarkModeFromLS() {
+      return localStorage.getItem("darkMode") === "true";
+    }
+    function setDarkModeToLS(val) {
+      localStorage.setItem("darkMode", Boolean(val));
+    }
+    function updateDarkMode(dark) {
+      document.body.classList.toggle("dark-mode", dark);
+      if (dark) {
+        darkModeIcon.textContent = "☀️";
+        toggleDarkBtn.setAttribute('aria-label', 'Switch to light mode');
+      } else {
+        darkModeIcon.textContent = "🌙";
+        toggleDarkBtn.setAttribute('aria-label', 'Switch to dark mode');
+      }
+    }
+
+    // Notification (toast) - professional style
+    function showToast(message, type="success") {
+      const colorMap = {
+        success: "#3db77c",
+        info: "#208dcc",
+        danger: "#d34040",
+        warning: "#e6b450"
+      };
+      const emojiMap = {
+        success: "",
+        info: "",
+        danger: "",
+        warning: ""
+      };
+      const color = colorMap[type] || colorMap.info;
       const toast = document.createElement("div");
-      toast.className = `toast align-items-center text-bg-${type} border-0 show mb-2`;
-      toast.innerHTML = `
-        <div class="d-flex">
-          <div class="toast-body">${message}</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>`;
+      toast.className = "custom-toast";
+      toast.style.borderLeft = "5px solid " + color;
+      toast.innerHTML = `<span style="font-weight:700;">${message}</span>
+        <button type="button" class="btn-close float-end" data-bs-dismiss="toast" aria-label="Close" style="pointer-events:all;"></button>`;
+      if(document.body.classList.contains("dark-mode")) {
+        toast.style.background = "#222d43";
+        toast.style.color = "#eaf4fe";
+      }
       toastContainer.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
+      setTimeout(() => { try {toast.remove()}catch{} }, 3200);
     }
 
-    // Fetch Students
-    async function fetchStudents() {
-      const res = await fetch(API_URL);
-      const students = await res.json();
-      tableBody.innerHTML = "";
-      students.forEach(student => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${student.name}</td>
-          <td>${student.rollNumber}</td>
-          <td>${student.email}</td>
-          <td>${student.department}</td>
-          <td>${student.year}</td>
-          <td>
-            <button class="btn btn-sm btn-warning me-2 btn-animated" onclick="editStudent('${student._id}')">✏️</button>
-            <button class="btn btn-sm btn-danger btn-animated" onclick="deleteStudent('${student._id}')">🗑️</button>
-          </td>`;
-        tableBody.appendChild(row);
-      });
+    // Row highlight
+    function flashRow(selector) {
+      const row = tableBody.querySelector(selector);
+      if(row) {
+        row.classList.add("highlight-row");
+        setTimeout(()=>row.classList.remove("highlight-row"), 800);
+      }
     }
 
-    // Add / Update Student
+    // Fetch, render table rows (professional, no emojis)
+    async function fetchStudents(selectedId = null) {
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-5 text-muted">Loading students...</td></tr>`;
+      try {
+        const res = await fetch(API_URL);
+        const students = await res.json();
+        tableBody.innerHTML = "";
+        if(students.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-warning py-4">No students found. Add one above!</td></tr>`;
+        }
+        students.forEach(student => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${student.name}</td>
+            <td><span class="badge bg-light text-dark border border-light px-2">${student.rollNumber}</span></td>
+            <td><span data-bs-toggle="tooltip" title="${student.email}">${student.email}</span></td>
+            <td>${student.department}</td>
+            <td><span class="badge-year">${student.year}</span></td>
+            <td class="text-center">
+              <button class="btn edit-btn btn-sm btn-animated me-1 edit-btn" data-id="${student._id}" aria-label="Edit student" data-bs-toggle="tooltip" title="Edit">
+                Edit
+              </button>
+              <button class="btn delete-btn btn-sm btn-animated delete-btn" data-id="${student._id}" aria-label="Delete student" data-bs-toggle="tooltip" title="Delete">
+                Delete
+              </button>
+            </td>
+          `;
+          row.setAttribute("data-id", student._id);
+          tableBody.appendChild(row);
+          if(selectedId && student._id === selectedId) setTimeout(() => flashRow(`[data-id="${selectedId}"]`), 80);
+        });
+        // Tooltips (still enabled)
+        if (window.bootstrap && window.bootstrap.Tooltip) {
+          let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+          tooltipTriggerList.map(el => new bootstrap.Tooltip(el, {trigger:'hover'}));
+        }
+      } catch(e) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error loading students!</td></tr>`;
+      }
+    }
+
+    // Add / Update
     async function addStudent(e) {
       e.preventDefault();
-
-      const studentData = {
-        name: form.name.value,
-        rollNumber: form.rollNumber.value,
-        email: form.email.value,
-        department: form.department.value,
-        year: form.year.value,
-      };
-
-      const studentId = form.studentId.value;
-
-      if (studentId) {
-        await fetch(`${API_URL}/${studentId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(studentData),
-        });
-        showToast("Student updated successfully!", "info");
-      } else {
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(studentData),
-        });
-        showToast("Student added successfully!", "success");
+      submitBtn.classList.add('glow'); submitBtn.disabled = true; submitBtnIcon.textContent = "...";
+      try {
+        const studentData = {
+          name: form.name.value.trim(),
+          rollNumber: form.rollNumber.value.trim(),
+          email: form.email.value.trim(),
+          department: form.department.value.trim(),
+          year: Number(form.year.value),
+        };
+        if (!studentData.name || !studentData.rollNumber || !studentData.email || !studentData.department || !studentData.year) {
+          showToast("Please fill in all fields", "warning");
+          return;
+        }
+        const studentId = form.studentId.value;
+        let response, resData;
+        if (studentId) {
+          response = await fetch(`${API_URL}/${studentId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(studentData),
+          });
+          resData = await response.json();
+          showToast("Student updated!","info");
+          await fetchStudents(studentId);
+        } else {
+          response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(studentData),
+          });
+          resData = await response.json();
+          if (resData && resData._id) {
+            showToast("Student added!","success");
+            await fetchStudents(resData._id);
+          } else {
+            showToast("Failed to add student!","danger");
+            await fetchStudents();
+          }
+        }
+        form.reset();
+        form.studentId.value = "";
+        formTitle.textContent = "Add New Student";
+        submitBtnText.textContent = "Add Student";
+        submitBtnIcon.textContent = "+";
+        cancelEditBtn.classList.add("d-none");
+      } catch (err) {
+        showToast("Something went wrong!","danger");
+      } finally {
+        setTimeout(() => {
+          submitBtn.classList.remove('glow');
+          submitBtn.disabled = false;
+          submitBtnIcon.textContent = "+";
+        }, 180);
       }
-
-      form.reset();
-      form.studentId.value = "";
-      formTitle.textContent = "Add New Student";
-      submitBtn.textContent = "Add Student";
-      cancelEditBtn.classList.add("d-none");
-      fetchStudents();
     }
 
+    // Handler for edit/delete
+    tableBody.addEventListener("click", async function(e) {
+      if(e.target.closest('.edit-btn')) {
+        const id = e.target.closest('.edit-btn').dataset.id;
+        await editStudent(id);
+      }
+      if(e.target.closest('.delete-btn')) {
+        const id = e.target.closest('.delete-btn').dataset.id;
+        await deleteStudent(id);
+      }
+    });
+
+    // Edit handler
     async function editStudent(id) {
-      const res = await fetch(`${API_URL}/${id}`);
-      const student = await res.json();
+      try {
+        const res = await fetch(`${API_URL}/${id}`);
+        if (!res.ok) throw new Error("Student not found");
+        const student = await res.json();
+        form.name.value = student.name || "";
+        form.rollNumber.value = student.rollNumber || "";
+        form.email.value = student.email || "";
+        form.department.value = student.department || "";
+        form.year.value = student.year || "";
+        form.studentId.value = student._id;
 
-      form.name.value = student.name;
-      form.rollNumber.value = student.rollNumber;
-      form.email.value = student.email;
-      form.department.value = student.department;
-      form.year.value = student.year;
-      form.studentId.value = student._id;
-
-      formTitle.textContent = "Edit Student";
-      submitBtn.textContent = "Update Student";
-      cancelEditBtn.classList.remove("d-none");
+        formTitle.textContent = "Edit Student";
+        submitBtnText.textContent = "Update Student";
+        submitBtnIcon.textContent = "✎";
+        cancelEditBtn.classList.remove("d-none");
+        form.scrollIntoView({behavior: "smooth", block: "center"});
+      } catch {
+        showToast("Failed to retrieve student!","danger");
+      }
     }
 
+    // Delete handler with professional confirm modal
     async function deleteStudent(id) {
-      if (confirm("Are you sure you want to delete this student?")) {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-        showToast("Student deleted successfully!", "danger");
-        fetchStudents();
+      let doDelete = false;
+      if(window.bootstrap && window.bootstrap.Modal) {
+        const dlg = document.createElement("div");
+        dlg.className = "modal fade";
+        dlg.tabIndex = -1;
+        dlg.innerHTML = `
+          <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" style="border-radius:9px;background:#f5f7fa;box-shadow:0 3px 16px #d5e1ef80;">
+              <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title" style="color:#d34040;font-weight:700">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body pb-0" style="font-size:1em;color:#3a3a3a;">Are you sure you want to delete this student?</div>
+              <div class="modal-footer border-0 pt-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="modalConfirmDelete">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(dlg);
+        const modal = new bootstrap.Modal(dlg);
+        dlg.querySelector("#modalConfirmDelete").onclick = async () => { doDelete = true; modal.hide();};
+        modal.show();
+        dlg.addEventListener('hidden.bs.modal', async () => {
+          document.body.removeChild(dlg);
+          if(doDelete) {
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            showToast("Student deleted!","danger");
+            await fetchStudents();
+          }
+        });
+      } else {
+        if(confirm("Are you sure you want to delete this student?")) {
+          await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+          showToast("Student deleted!","danger");
+          await fetchStudents();
+        }
       }
     }
 
@@ -228,20 +695,61 @@
       form.reset();
       form.studentId.value = "";
       formTitle.textContent = "Add New Student";
-      submitBtn.textContent = "Add Student";
+      submitBtnText.textContent = "Add Student";
+      submitBtnIcon.textContent = "+";
       cancelEditBtn.classList.add("d-none");
     });
 
-    toggleDarkBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-      toggleDarkBtn.textContent =
-        document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+    // Animated submit button effect, subtle in professional style
+    Array.from(form.querySelectorAll('input')).forEach(input => {
+      input.addEventListener('input', function() {
+        if(form.checkValidity())
+          submitBtn.classList.add('glow');
+        else
+          submitBtn.classList.remove('glow');
+      });
     });
 
-    form.addEventListener("submit", addStudent);
-    fetchStudents();
-  </script>
+    // Interactive dark mode toggle with localStorage
+    function toggleDark() {
+      const wantsDark = !document.body.classList.contains("dark-mode");
+      updateDarkMode(wantsDark);
+      setDarkModeToLS(wantsDark);
+      darkModeIcon.style.transform = wantsDark ? "rotate(-17deg) scale(1.08)" : "scale(1)";
+      setTimeout(()=>darkModeIcon.style.transform="", 180);
+    }
+    toggleDarkBtn.addEventListener("click", toggleDark);
 
+    // On load: detect & apply dark mode
+    (function() {
+      let darkIs = getDarkModeFromLS();
+      if (darkIs === false || darkIs === true) {
+        updateDarkMode(darkIs);
+      } else if (getSystemPrefDark()) {
+        updateDarkMode(true);
+        setDarkModeToLS(true);
+      }
+    })();
+
+    window.onload = () => {
+      setTimeout(()=>{
+        document.querySelectorAll(".animated-appear").forEach(el=>el.style.opacity = "1");
+        fetchStudents();
+      },90);
+    }
+
+    form.addEventListener("submit", addStudent);
+
+    // Enable all tooltips
+    document.addEventListener("DOMContentLoaded", function(){
+      if(window.bootstrap && window.bootstrap.Tooltip) {
+        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl, {trigger:'hover'});
+        });
+      }
+    });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
