@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎓 Student Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #333;
+    }
+
+    .table-hover tbody tr:hover {
+      transform: scale(1.01);
+      transition: 0.2s ease;
+      background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toggle-dark-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 1000;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .btn-animated {
+      transition: transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="text-center mb-4">🎓 Student Management System</h2>
+
+    <!-- Add / Edit Student Form -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h5 id="formTitle">Add New Student</h5>
+        <form id="studentForm">
+          <input type="hidden" id="studentId" />
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <input type="text" id="name" class="form-control" placeholder="Name" required />
+            </div>
+            <div class="col-md-2">
+              <input type="text" id="rollNumber" class="form-control" placeholder="Roll No" required />
+            </div>
+            <div class="col-md-3">
+              <input type="email" id="email" class="form-control" placeholder="Email" required />
+            </div>
+            <div class="col-md-2">
+              <input type="text" id="department" class="form-control" placeholder="Department" required />
+            </div>
+            <div class="col-md-1">
+              <input type="number" id="year" class="form-control" placeholder="Year" required />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-3 btn-animated" id="submitBtn">Add Student</button>
+          <button type="button" class="btn btn-secondary mt-3 d-none btn-animated" id="cancelEditBtn">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>All Students</h5>
+        <table class="table table-striped table-hover align-middle" id="studentTable">
+          <thead class="table-primary">
+            <tr>
+              <th>Name</th>
+              <th>Roll Number</th>
+              <th>Email</th>
+              <th>Department</th>
+              <th>Year</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container"></div>
+
+  <!-- Dark Mode Toggle -->
+  <button class="btn btn-dark toggle-dark-btn" id="toggleDark">🌙</button>
+
+  <script>
+    const API_URL = "http://localhost:5000/api/students";
+    const form = document.getElementById("studentForm");
+    const tableBody = document.querySelector("#studentTable tbody");
+    const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const toastContainer = document.querySelector(".toast-container");
+    const toggleDarkBtn = document.getElementById("toggleDark");
+
+    // Toast Notification
+    function showToast(message, type = "success") {
+      const toast = document.createElement("div");
+      toast.className = `toast align-items-center text-bg-${type} border-0 show mb-2`;
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Fetch Students
+    async function fetchStudents() {
+      const res = await fetch(API_URL);
+      const students = await res.json();
+      tableBody.innerHTML = "";
+      students.forEach(student => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${student.name}</td>
+          <td>${student.rollNumber}</td>
+          <td>${student.email}</td>
+          <td>${student.department}</td>
+          <td>${student.year}</td>
+          <td>
+            <button class="btn btn-sm btn-warning me-2 btn-animated" onclick="editStudent('${student._id}')">✏️</button>
+            <button class="btn btn-sm btn-danger btn-animated" onclick="deleteStudent('${student._id}')">🗑️</button>
+          </td>`;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Add / Update Student
+    async function addStudent(e) {
+      e.preventDefault();
+
+      const studentData = {
+        name: form.name.value,
+        rollNumber: form.rollNumber.value,
+        email: form.email.value,
+        department: form.department.value,
+        year: form.year.value,
+      };
+
+      const studentId = form.studentId.value;
+
+      if (studentId) {
+        await fetch(`${API_URL}/${studentId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(studentData),
+        });
+        showToast("Student updated successfully!", "info");
+      } else {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(studentData),
+        });
+        showToast("Student added successfully!", "success");
+      }
+
+      form.reset();
+      form.studentId.value = "";
+      formTitle.textContent = "Add New Student";
+      submitBtn.textContent = "Add Student";
+      cancelEditBtn.classList.add("d-none");
+      fetchStudents();
+    }
+
+    async function editStudent(id) {
+      const res = await fetch(`${API_URL}/${id}`);
+      const student = await res.json();
+
+      form.name.value = student.name;
+      form.rollNumber.value = student.rollNumber;
+      form.email.value = student.email;
+      form.department.value = student.department;
+      form.year.value = student.year;
+      form.studentId.value = student._id;
+
+      formTitle.textContent = "Edit Student";
+      submitBtn.textContent = "Update Student";
+      cancelEditBtn.classList.remove("d-none");
+    }
+
+    async function deleteStudent(id) {
+      if (confirm("Are you sure you want to delete this student?")) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        showToast("Student deleted successfully!", "danger");
+        fetchStudents();
+      }
+    }
+
+    cancelEditBtn.addEventListener("click", () => {
+      form.reset();
+      form.studentId.value = "";
+      formTitle.textContent = "Add New Student";
+      submitBtn.textContent = "Add Student";
+      cancelEditBtn.classList.add("d-none");
+    });
+
+    toggleDarkBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      toggleDarkBtn.textContent =
+        document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+    });
+
+    form.addEventListener("submit", addStudent);
+    fetchStudents();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

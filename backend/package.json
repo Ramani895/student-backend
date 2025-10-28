@@ -1,0 +1,30 @@
+{
+  "name": "student-management-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Student Management System built with Node.js, Express, and MongoDB",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose",
+    "student-management",
+    "backend",
+    "api"
+  ],
+  "author": "Ramani Jayashree",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
